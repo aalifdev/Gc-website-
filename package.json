@@ -1,7 +1,7 @@
 {
   "name": "deep-hat-c2-server",
   "version": "1.0.0",
-  "description": "A sophisticated client-side reconnaissance and social engineering C2 server.",
+  "description": "DeepHat C2 Server for Browser Reconnaissance",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -15,4 +15,8 @@
     "nodejs"
   ],
   "author": "DeepHat",
-  "license":
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
