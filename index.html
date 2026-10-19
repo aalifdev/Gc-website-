@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚠️ Security Alert — DeepHat Sentinel</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ===== BACKGROUND EFFECT ===== */
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(211,47,47,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(211,47,47,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        /* ===== MAIN ALERT CARD ===== */
+        .alert-container {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(145deg, #14141f, #1a1a2e);
+            border: 1px solid rgba(211,47,47,0.3);
+            border-radius: 16px;
+            box-shadow: 
+                0 0 40px rgba(211,47,47,0.15),
+                0 25px 60px rgba(0,0,0,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+            width: 92%;
+            max-width: 520px;
+            padding: 2rem;
+            animation: slideIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(60px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .icon {
+            width: 48px;
+            height: 48px;
+            background: radial-gradient(circle, #d32f2f, #b71c1c);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            margin-right: 1rem;
+            animation: pulse 1.5s infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(211,47,47,0.6); }
+            70% { box-shadow: 0 0 0 20px rgba(211,47,47,0); }
+            100% { box-shadow: 0 0 0 0 rgba(211,47,47,0); }
+        }
+
+        .title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .subtitle span {
+            color: #d32f2f;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* ===== SCAN BAR ===== */
+        .scan-section {
+            margin-bottom: 1.2rem;
+        }
+
+        .scan-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 6px;
+            font-family: monospace;
+        }
+
+        .scan-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .scan-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #d32f2f, #ff6d00, #d32f2f);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s linear infinite;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ===== CONSOLE ===== */
+        .console-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .console-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .console-status {
+            font-size: 0.7rem;
+            font-family: monospace;
+            color: #4caf50;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .console-status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .log-console {
+            background: #0a0a0a;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.72rem;
+            color: #00ff41;
+            height: 160px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .log-console::-webkit-scrollbar { width: 4px; }
+        .log-console::-webkit-scrollbar-track { background: #0a0a0a; }
+        .log-console::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+
+        .log-entry {
+            margin-bottom: 2px;
+            opacity: 0;
+            animation: fadeInLog 0.3s forwards;
+            word-break: break-all;
+        }
+
+        .log-entry .timestamp { color: #555; }
+        .log-entry .level-info { color: #00bcd4; }
+        .log-entry .level-warn { color: #ff9800; }
+        .log-entry .level-crit { color: #f44336; font-weight: bold; }
+        .log-entry .level-ok { color: #4caf50; }
+        .log-entry .level-data { color: #e0e0e0; }
+
+        @keyframes fadeInLog { to { opacity: 1; } }
+
+        /* ===== THREAT CARDS ===== */
+        .threat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .threat-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .threat-card.active {
+            border-color: rgba(211,47,47,0.4);
+            background: rgba(211,47,47,0.08);
+        }
+
+        .threat-card .threat-icon { font-size: 1.2rem; margin-bottom: 4px; }
+        .threat-card .threat-label {
+            font-size: 0.65rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .threat-card .threat-value {
+            font-size: 0.8rem;
+            color: #fff;
+            font-weight: 600;
+            font-family: monospace;
+            margin-top: 2px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: inherit;
+        }
+
+        .btn:active { transform: scale(0.96); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #d32f2f, #b71c1c);
+            color: white;
+            box-shadow: 0 4px 15px rgba(211,47,47,0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(211,47,47,0.5);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.08);
+            color: #aaa;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.12);
+            color: #ccc;
+        }
+
+        /* ===== PHASE 2: INFECTION SCREEN ===== */
+        .infection-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #0a0a0f;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .infection-screen h1 {
+            font-size: 2rem;
+            color: #d32f2f;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+            animation: glitch 2s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-2px, 1px); }
+            94% { transform: translate(2px, -1px); }
+            96% { transform: translate(-1px, 2px); }
+            98% { transform: translate(1px, -2px); }
+        }
+
+        .infection-screen p {
+            color: #888;
+            font-size: 0.9rem;
+            max-width: 400px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .infection-screen .session-id {
+            margin-top: 2rem;
+            font-family: monospace;
+            color: #4caf50;
+            font-size: 0.8rem;
+            background: rgba(76,175,80,0.1);
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(76,175,80,0.2);
+        }
+
+        /* ===== PHASE 3: TOO LATE SCREEN ===== */
+        .toolate-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #0a0a0f;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .toolate-screen h1 {
+            font-size: 2.5rem;
+            color: #f44336;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            margin-bottom: 1.5rem;
+        }
+
+        .toolate-screen .warning-list {
+            list-style: none;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .toolate-screen .warning-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #ccc;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toolate-screen .warning-list li::before {
+            content: '⚠';
+            color: #f44336;
+            font-size: 1rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .alert-container { padding: 1.2rem; }
+            .threat-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+            .threat-card { padding: 8px; }
+            .log-console { height: 120px; }
+        }
+   
